@@ -10,21 +10,40 @@
 	const dispatch = createEventDispatcher();
 
 	export let readonly = false;
-	export let errorLoc = null;
+	export /**
+	* @type {{ line: number; column: any; } | null}
+	*/
+	 let errorLoc = null;
 	export let lineNumbers = true;
 	export let tab = true;
-	export let theme;
+	export /**
+	* @type {any}
+*/
+	 let theme;
 
+	/**
+	* @type {number}
+	*/
 	let w;
+	/**
+	* @type {number}
+	*/
 	let h;
 	let code = '';
+	/**
+	* @type {any}
+	*/
 	let mode;
 
 	// We have to expose set and update methods, rather
 	// than making this state-driven through props,
 	// because it's difficult to update an editor
 	// without resetting scroll otherwise
-	export async function set(new_code, new_mode) {
+	export /**
+	* @param {string} new_code
+	* @param {any} new_mode
+	*/
+	 async function set(new_code, new_mode) {
 		if (new_mode !== mode) {
 			await createEditor(mode = new_mode);
 		}
@@ -35,7 +54,10 @@
 		updating_externally = false;
 	}
 
-	export function update(new_code) {
+	export /**
+	* @param {string} new_code
+	*/
+	 function update(new_code) {
 		code = new_code;
 
 		if (editor) {
@@ -57,7 +79,10 @@
 		return editor.getHistory();
 	}
 
-	export function setHistory(history) {
+	export /**
+	* @param {any} history
+	*/
+	 function setHistory(history) {
 		editor.setHistory(history);
 	}
 
@@ -65,12 +90,16 @@
 		if (editor) editor.clearHistory();
 	}
 
-	export function setCursor(pos) {
+	export /**
+	* @param {any} pos
+	*/
+	 function setCursor(pos) {
 		if (editor) editor.setCursor(pos);
 	}
 
 	export const cursorIndex = writable(0);
 
+	// @ts-ignore
 	export function markText({ from, to }) {
 		if (editor) editor.markText(editor.posFromIndex(from), editor.posFromIndex(to), { className: 'mark-text' });
 	}
@@ -93,7 +122,11 @@
 		copyToClipboard();
 	}
 	// pass in current project's id as argument
-	export async function getCodeEditorValue(id, diagramName) {
+	export /**
+	* @param {any} id
+	* @param {any} diagramName
+	*/
+	 async function getCodeEditorValue(id, diagramName) {
 		const codeToSave = editor.getValue();
 		let found = false;
 
@@ -133,30 +166,31 @@
 		// console.log(dataURL);
 	}
 	
-	export async function loadSavedCode(code) {
-		// grab and load saved code into the editor
-		// const codeToSave = editor.getValue();
-		console.log('grabbing code from store', code)
+	export /**
+* @param {string} code
+*/
+	 async function loadSavedCode(code) {
 		editor.setValue(code);
-		// getCodeFromDB($user_email)
-		// 	.then(data => editor.setValue(code));
-		
-		// editor.setValue(codeToLoad[0].code);
-		// await page.locator('body').screenshot({ path: 'screenshot.png' });
 	}
 
-	export async function deleteCode(id) {
+	export /**
+* @param {any} id
+*/
+	 async function deleteCode(id) {
 		deleteCodeFromDB(id, $diagrams);
 		editor.setValue('');
+		// @ts-ignore
 		document.getElementById('project-name').value = '';
 	}
+	
 
-	export async function updateCode(id, updated_code) {
+	export /**
+* @param {any} id
+* @param {any} updated_code
+*/
+	 async function updateCode(id, updated_code) {
 		updateCodeInDB(id, updated_code);
 	}
-	
-	// const playwright = require('playwright')
-	// await page.g
 
 	const modes = {
 		js: {
@@ -177,11 +211,25 @@
 	};
 
 	const refs = {};
+	/**
+* @type {{ setValue: (arg0: string) => void; getScrollInfo: () => { left: any; top: any; }; scrollTo: (arg0: any, arg1: any) => void; refresh: () => void; focus: () => void; getHistory: () => any; setHistory: (arg0: any) => void; clearHistory: () => void; setCursor: (arg0: any) => void; markText: (arg0: { line: number; ch: any; }, arg1: { line: number; ch: any; }, arg2: { className: string; }) => void; posFromIndex: (arg0: any) => any; getAllMarks: () => any[]; getValue: () => any; removeLineClass: (arg0: any, arg1: string, arg2: string) => void; addLineClass: (arg0: any, arg1: string, arg2: string) => void; toTextArea: () => void; on: (arg0: string, arg1: { (instance: any): void; (instance: any): void; }) => void; }}
+*/
 	let editor;
 	let updating_externally = false;
+	/**
+* @type {{ clear: () => void; }}
+*/
 	let marker;
+	/**
+* @type {number | null}
+*/
 	let error_line;
 	let destroyed = false;
+	/**
+* @type {{ normalizeKeyMap: (arg0: { Enter: string; 'Ctrl-/': string; 'Cmd-/': string; 'Ctrl-Q': (cm: any) => void; 'Cmd-Q': (cm: any) => void; 
+// allow escaping the CodeMirror with Esc Tab
+'Esc Tab': boolean; }) => any; fromTextArea: (arg0: any, arg1: { lineNumbers: boolean; lineWrapping: boolean; indentWithTabs: boolean; indentUnit: number; tabSize: number; value: string; mode: any; readOnly: boolean; autoCloseBrackets: boolean; autoCloseTags: boolean; extraKeys: any; foldGutter: boolean; gutters: string[]; theme: any; }) => any; }}
+*/
 	let CodeMirror;
 
 	$: if (editor && w && h) {
@@ -195,6 +243,7 @@
 			const line = errorLoc.line - 1;
 			const ch = errorLoc.column;
 
+			// @ts-ignore
 			marker = editor.markText({ line, ch }, { line, ch: ch + 1 }, {
 				className: 'error-loc'
 			});
@@ -205,6 +254,9 @@
 		}
 	}
 
+	/**
+* @type {null}
+*/
 	let previous_error_line;
 	$: if (editor) {
 		if (previous_error_line != null) {
@@ -213,6 +265,7 @@
 
 		if (error_line && (error_line !== previous_error_line)) {
 			editor.addLineClass(error_line, 'wrap', 'error-line');
+			// @ts-ignore
 			previous_error_line = error_line;
 		}
 	}
@@ -235,6 +288,9 @@
 
 	let first = true;
 
+	/**
+* @param {string | number} mode
+*/
 	async function createEditor(mode) {
 		if (destroyed || !CodeMirror) return;
 
@@ -247,6 +303,7 @@
 			indentUnit: 2,
 			tabSize: 2,
 			value: '',
+			// @ts-ignore
 			mode: modes[mode] || {
 				name: mode
 			},
@@ -282,6 +339,7 @@
 
 		if (destroyed) return;
 
+		// @ts-ignore
 		editor = CodeMirror.fromTextArea(refs.editor, opts);
 
 		editor.on('change', instance => {
@@ -301,6 +359,9 @@
 		first = false;
 	}
 
+	/**
+* @param {number | undefined} ms
+*/
 	function sleep(ms) {
 		return new Promise(fulfil => setTimeout(fulfil, ms));
 	}

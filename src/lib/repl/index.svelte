@@ -9,7 +9,7 @@
 	import Bundler from './Bundler.js';
 	import { is_browser } from './env.js';
 	// import the user and user saved projects from the store;
-	import { user, diagrams } from '$lib/stores/authStore.js';
+	import { user, diagrams } from '$lib/stores/authStoreTs';
 
 	export let packagesUrl = 'https://unpkg.com';
 	export let svelteUrl = `${packagesUrl}/svelte`;
